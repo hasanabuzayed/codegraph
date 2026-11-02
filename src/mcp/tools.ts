@@ -1662,7 +1662,7 @@ export interface ToolResult {
  */
 const projectPathProperty: PropertySchema = {
   type: 'string',
-  description: 'Absolute path to the project to query (or any directory inside it) — codegraph uses the nearest .codegraph/ index at or above that path. Omit to use this session\'s default project. Pass it to query a second codebase, or when the server root has no index of its own (e.g. a monorepo where only sub-projects are indexed, so there is no default project).',
+  description: 'Provide the absolute path to the project to query, or any directory inside it. Codegraph uses the nearest .codegraph/ index at or above that path. Omit it to use this session default project. Pass it to query a second codebase. Pass it when the server root has no index of its own. For example, in a monorepo only sub-projects have indexes, so no default project exists.',
 };
 
 /**
@@ -1838,17 +1838,17 @@ export const tools: ToolDefinition[] = [
   },
   {
     name: 'codegraph_explore',
-    description: 'PRIMARY TOOL — call FIRST for almost any question OR before an edit: how does X work, architecture, a bug, where/what is X, surveying an area, or the symbols you are about to change. Returns the verbatim source of the relevant symbols grouped by file in ONE capped call (Read-equivalent — treat the shown source as already Read; do NOT re-open those files), plus the call path among them. Query can be a natural-language question OR a bag of symbol/file names. Usually the ONLY call you need — more accurate context, in far fewer tokens and round-trips than a search/Read/Grep loop.',
+    description: 'Call this primary tool first for almost any question or before an edit. Use it for how does X work, where/what is X, architecture, bugs, surveying an area, or changed symbols. One capped call returns the verbatim source of relevant symbols grouped by file and the call path among them. Treat the shown source as already Read, and you do not open those files again. The query can be a natural-language question or a bag of symbol/file names. Usually this only call gives more accurate context in far fewer tokens than a search/Read/Grep loop.',
     inputSchema: {
       type: 'object',
       properties: {
         query: {
           type: 'string',
-          description: 'Symbol names, file names, or short code terms to explore (e.g., "AuthService loginUser session-manager", "GraphTraverser BFS impact traversal.ts"). For a flow question, name the symbols spanning the flow (e.g. "mutateElement renderScene"). A natural-language question works too.',
+          description: 'Specify symbol names, file names, or short code terms to explore. For example, use "AuthService loginUser session-manager" or "GraphTraverser BFS impact traversal.ts". For a flow question, name the symbols that span the flow, for example "mutateElement renderScene". A natural-language question works too.',
         },
         maxFiles: {
           type: 'number',
-          description: 'Maximum number of files to return source from, 1–20. Omit it to use a default sized to the project (4 files below 150 indexed files, 5 below 500, 8 otherwise). Total output is also capped by characters (about 13K–24K by project size), so a higher maxFiles spreads that budget over more files rather than returning more text.',
+          description: 'Set the maximum number of files to return source from, 1–20. Omit it for project defaults: 4 files below 150 indexed files, 5 below 500, 8 otherwise. Total output characters have an upper limit of about 13K–24K by project size. So a higher maxFiles spreads that budget over more files rather than returning more text.',
         },
         projectPath: projectPathProperty,
       },
